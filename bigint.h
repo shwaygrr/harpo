@@ -536,11 +536,11 @@ public:
     /* Operator {!=} Overloadings, for different kind of
         parameter for the programmer's convinience  */
 
-    /****Temporarily redundant***
-        inline bool operator !=(bigint const &n) {
-            return (*this).str != n.str;
-        }
-        */
+
+    inline bool operator !=(bigint const &n) {
+        return (*this).str != n.str;
+    }
+
 
     inline friend bool operator != (bigint const &n1, int n2) {
         return n1.str != std::to_string(n2);
