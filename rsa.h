@@ -17,11 +17,13 @@ bigint EEA(bigint a, bigint b);
 
 //key gen
 bigint randPrimeGen(unsigned int size);
-void keyGen(const bigint& message);
+void keyGen(unsigned int bit_size);
+
 //encryption
+bigint cipherTextRSA(const bigint& plain_text);
 
 //decryption
-
+bigint plainTextRSA(const bigint& cipher_text);
 
 //keys
 extern bigint n_public;

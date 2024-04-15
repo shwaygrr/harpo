@@ -183,7 +183,7 @@ bigint EEA(bigint a, bigint b) {
 
     d = a; x = x2; y = y2;
 
-    std::cout << d << std::endl;
+    // std::cout << d << std::endl;
     if (x > 0) return x; else return y;
     // return {d, x + a};
 }
@@ -209,18 +209,17 @@ bigint randPrimeGen(unsigned int size) {
 //encryption
 /*
     RSA Key Generation
-        -Input:
-        -Output:
+        -Input: key size in bits
+        -Output: Set public and private keys
 */
-void keyGen(const bigint& message) {
-    unsigned int num_bits = std::stoi((big_log2(message) + 1).as_str());
+void keyGen(unsigned int bit_size) {
 
     //generate two large primes
-    bigint p = randPrimeGen(num_bits + 1);
-    bigint q = randPrimeGen(num_bits + 1);
+    bigint p = randPrimeGen(bit_size);
+    bigint q = randPrimeGen(bit_size);
 
     //ensure p and q are distinct
-    while (p == q) q = randPrimeGen(num_bits + 1);
+    while (p == q) q = randPrimeGen(bit_size);
 
     //compute n and phi = (p-1)*(q-1)
     n_public = p * q;
@@ -236,4 +235,27 @@ void keyGen(const bigint& message) {
     } while ((e_public * d_private) % phi != 1); //check if e*d mod phi = 1
 
     std::cout << "Verification: " << (d_private * e_public) % phi << std::endl;
+}
+
+/*
+    RSA Encryption
+        Input: Message plain text as integer
+        Output: Cipher text interger
+    //obtain authentic public key **digital signiture**
+*/
+bigint cipherTextRSA(const bigint& plain_text) {
+    if (big_log2(plain_text)+1 > 2048) {
+        std::cout << "handle large message";
+    }
+
+    return modExp(plain_text, e_public, n_public);
+}
+
+/*
+    RSA Decryption
+        Input: Cipher Text as integer
+        Output: plain text ass integer (original message)
+*/
+bigint plainTextRSA(const bigint& cipher_text) {
+    return modExp(cipher_text, d_private, n_public);
 }
