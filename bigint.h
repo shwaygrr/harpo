@@ -586,11 +586,17 @@ public:
         ans.str = pow(a.str, b.str);
         return ans;
     }
-    inline static bigint _big_sqrt(bigint &a) {                // returns the square root value of Big Integer.
+    //temp
+    inline static bigint _big_pow(const bigint &a, const bigint &b) {
         bigint ans;
-        ans.str = sqrt(a.str);
+        ans.str = pow(a.str, b.str);
         return ans;
     }
+    // inline static bigint _big_sqrt(bigint &a) {                // returns the square root value of Big Integer.
+    //     bigint ans;
+    //     ans.str = sqrt(a.str);
+    //     return ans;
+    // }
     inline static bigint _big_log2(const bigint &a) {                // returns the log of Big Integer to the base of 2.
         bigint ans;
         ans.str = log2(a.str);

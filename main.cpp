@@ -1,5 +1,6 @@
 // #include "mainwindow.h"
-#include "rsa.h"
+// #include "rsa.h"
+#include "aes.h"
 #include <iostream>
 // #include <QApplication>
 
@@ -17,26 +18,10 @@
 // }
 
 int main() {
-        bigint a("100010012030403020500503304034505");
-
-        // std::cout << modExp(2, 4, 100);
-        // std::cout << binaryToDecimal("1001");
-
-        // std::cout << randOddNumGen(4);
-        // for(int i = 0; i < 2; i++) {
-        //     std::cout << randPrimeGen(256) << std::endl;
-        // }
-
-        // std::tuple<bigint, bigint> x = EEA(6007800, 3674911);
-        // std::cout << std::get<0>(x) << " " << std::get<1>(x);
-
-        keyGen(20);
-        std::cout << "e_public: " << e_public << " n_public: " << n_public << " d_private: " << d_private << std::endl;
-
-        bigint cipher_t = cipherTextRSA(200);
-        std::cout << "cipher text: " << cipher_t << std::endl;
-
-        bigint plain_t = plainTextRSA(cipher_t);
-        std::cout << "plain text: " << plain_t << std::endl;
-        return 0;
+    // bigint a("100010012030403020500503304034505");
+    //128 bits int conversion not supported so must input as binary string
+    bigint x("112197127139048939991993347912889288309");
+    std::bitset<128> bin(intToBin(x));
+    keyGen(binToHex(bin));
+    return 0;
 }
