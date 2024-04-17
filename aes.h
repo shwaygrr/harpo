@@ -63,7 +63,23 @@ std::string binToHex(const std::bitset<bit_size>& bin) {
     return hex_str;
 }
 
-std::string intToBin(bigint integer);
+/*
+    Integer to Binary
+        Input: Integer
+        Output: Binary representation
+*/
+template<size_t bit_size>
+std::bitset<bit_size> intToBin(bigint integer) {
+    std::string result;
+
+    while(integer != 0) {
+        result = (integer % 2).as_str() + result;
+        integer /= 2;
+    }
+    // std::cout << result;
+    std::bitset<bit_size> result_bin(result);
+    return result_bin;
+}
 
 /*
     Hexadecimal to Binary
@@ -82,10 +98,7 @@ std::bitset<bit_size> hexToBin(const std::string& hex) {
         int_value_ss << std::hex << hex_letter;
         int_value_ss  >> int_value;
 
-        std::string int_value_bin = intToBin(int_value);
-
-        //pad
-        while(int_value_bin.size() != 4) int_value_bin  = "0" + int_value_bin;
+        std::string int_value_bin = intToBin<4>(int_value).to_string();
 
         result_str += int_value_bin;
     }
@@ -94,6 +107,7 @@ std::bitset<bit_size> hexToBin(const std::string& hex) {
     std::bitset<bit_size> result(result_str);
     return result;
 }
+
 std::bitset<8> gfMult(const std::string& mix_hex, const std::string& state_hex);
 
 //key generation
@@ -131,8 +145,9 @@ void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> t
 void shiftRows(std::bitset<128>& bin128);
 
 void mixColumn(std::bitset<128>& bin128);
-//encryption
 
+//encryption
+std::bitset<128> aesEnc128(const std::string& plain_text128, const std::string& priv_key128);
 
 //inverse round functions
 

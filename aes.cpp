@@ -1,21 +1,7 @@
 #include "aes.h"
 
 //helper functions
-/*
-    Integer to Binary
-        Input: Integer
-        Output: Binary representation
-*/
-std::string intToBin(bigint integer) {
-    std::string result;
 
-    while(integer != 0 ) {
-        result = (integer % 2).as_str() + result;
-        integer /= 2;
-    }
-    // std::cout << result;
-    return result;
-}
 
 /*
     Binary multiplacation using Galois Field
@@ -77,6 +63,8 @@ std::bitset<8> gfMult(const std::string& mix_hex, const std::string& state_hex) 
     // }
     // std::cout << std::endl << binToInt<8>(answer)<< std::endl;
 }
+
+
 
 //key generation
 /*
@@ -146,9 +134,9 @@ std::vector<std::string> keyGen(const std::string& key_hex) {
         keys.push_back(key_i);
     }
 
-    for (const std::string& key: keys) {
-        std::cout << key << std::endl;
-    }
+    // for (const std::string& key: keys) {
+    //     std::cout << key << std::endl;
+    // }
 
     return keys;
 }
@@ -156,25 +144,33 @@ std::vector<std::string> keyGen(const std::string& key_hex) {
 
 //round functions
 /*
+    Create Matrix
+        -Input: hex string
+        -Output: basically flipped matrix
+*/
+std::string flipMatrix(const std::string& hex_str) {
+    std::string hex_matrix;
+
+    for(int i = 0; i < 8; i+=2) {
+        for (int  j = i; j <= i+24; j+=8) {
+            hex_matrix += hex_str.substr(j, 2);
+            // std::cout << j << " ";
+        }
+        // std::cout <<std::endl;
+    }
+    return hex_matrix;
+}
+
+
+/*
     Add Round Key
         -Input: 128 block of Plaintext and key0
         -Output: Plaintext xor key0
 */
 std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key_hex) {
-    std::string state_matrix = "";
-    std::string round_key_matrix = "";
 
-    for(int i = 0; i < 8; i+=2) {
-        for (int  j = i; j <= i+24; j+=8) {
-            state_matrix += plain_text_hex.substr(j, 2);
-            round_key_matrix += key_hex.substr(j, 2);
-            // std::cout << j << " ";
-        }
-        // std::cout <<std::endl;
-    }
-
-    std::bitset<128> plain_text128(hexToBin<128>(state_matrix));
-    std::bitset<128> key128(hexToBin<128>(round_key_matrix));
+    std::bitset<128> plain_text128(hexToBin<128>(plain_text_hex));
+    std::bitset<128> key128(hexToBin<128>(key_hex));
 
     return plain_text128 ^ key128;
 }
@@ -227,20 +223,47 @@ void mixColumn(std::bitset<128>& bin128) {
         hex_matrix.push_back(row);
     }
 
-
-    std::string result_hex; // Initialize result column
-    for (int i = 0; i < 4; i++) { // Iterate over each row of the state matrix
-        for (int j = 0; j < 4; j++) { // Iterate over each column of the state matrix
+    std::string result_hex;
+    //matrix mult
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             std::bitset<8> col;
-            for (int k = 0; k < 4; k++) { // Iterate over each element of the state matrix
-                col ^= gfMult(MIX[i][k], hex_matrix[k][j]); // Perform the multiplication and XOR operation
+            for (int k = 0; k < 4; k++) {
+                col ^= gfMult(MIX[i][k], hex_matrix[k][j]); //perform the multiplication and XOR operation
             }
-            result_hex += (binToHex<8>(col)); // Store the result in the result column
+            result_hex += (binToHex<8>(col));
         }
     }
 
     bin128 = hexToBin<128>(result_hex);
-
 }
 
 //encryption
+std::bitset<128> aesEnc128(const std::string& plain_text, const std::string& priv_key) {
+    std::cout << "beginning encryption..." << std::endl;
+    //generate keys
+    std::vector<std::string> round_keys_hex = keyGen(priv_key);
+
+    //create matrices
+    std::string plain_text_matrix = flipMatrix(plain_text);
+    std::string round_key_matrix = flipMatrix(round_keys_hex[0]);
+
+    //add round with key0
+    std::bitset<128> state_matrix128 = addRoundKey(plain_text_matrix, round_key_matrix);
+
+
+    // 10 round enc
+    for(int i = 1; i <= 10; i++) {
+        byteSub(state_matrix128, SBOX);
+        shiftRows(state_matrix128);
+        //skip mixColumn last round
+        if (i != 10) mixColumn(state_matrix128);
+
+        state_matrix128 = addRoundKey(binToHex<128>(state_matrix128), flipMatrix(round_keys_hex[i]));
+    }
+
+    //flip matrix
+    std::bitset<128> cipher_text128 = hexToBin<128>(flipMatrix(binToHex<128>(state_matrix128)));
+    //return cipher text
+    return cipher_text128;
+}
