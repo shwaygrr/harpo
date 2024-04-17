@@ -21,7 +21,26 @@ int main() {
     // bigint a("100010012030403020500503304034505");
     //128 bits int conversion not supported so must input as binary string
     bigint x("112197127139048939991993347912889288309");
-    std::bitset<128> bin(intToBin(x));
-    keyGen(binToHex(bin));
+    std::bitset<128> xbin(intToBin(x));
+
+    bigint y("112275288879448558774595401684499068783");
+    std::bitset<128> ybin(intToBin(y));
+
+    //key addition
+    std::bitset<128> start = addRoundKey(binToHex(ybin), binToHex(xbin));
+
+    //byte sub
+    byteSub<128>(start, SBOX);
+
+
+    //shift row
+    shiftRows(start);
+
+    //mix column
+    mixColumn(start);
+
+    std::cout << binToHex(start) << std::endl;
+
+
     return 0;
 }

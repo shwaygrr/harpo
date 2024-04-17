@@ -20,3 +20,10 @@ const std::vector<std::vector<std::string>> SBOX = {
 };
 
 const std::vector<std::string> ROUND_CONSTANTS = {"01", "02", "04", "08", "10", "20", "40", "80", "1B", "36"};
+
+const std::vector<std::vector<std::string>> MIX = {
+    {"02","03","01","01"},
+    {"01","02","03","01"},
+    {"01","01","02","03"},
+    {"03","01","01","02"}
+};

@@ -17,6 +17,66 @@ std::string intToBin(bigint integer) {
     return result;
 }
 
+/*
+    Binary multiplacation using Galois Field
+        Input: 2 Hex values one 4 bit and other 8 bits
+        Ouput: Porduct using G(2^3)
+*/
+std::bitset<8> gfMult(const std::string& mix_hex, const std::string& state_hex) {
+    std::bitset<8> mix8(hexToBin<8>(mix_hex)), state8(hexToBin<8>(state_hex));
+
+    if(mix_hex == "01") {
+        return hexToBin<8>(state_hex);
+    }
+    //map to polynomials
+    std::vector<int> mix_poly;//length should only be at most  2
+
+    std::vector<int> state_poly;
+
+    for(int i = 0; i < 8; i++) {
+        if (mix8[i] == 1) mix_poly.push_back(i);
+        if (state8[i] == 1) state_poly.push_back(i);
+    }
+
+    //distribution
+    std::set<int> product_poly;
+    const std::vector<int>irreducible_poly = {4, 3, 1, 0};
+    //distrubute
+    for(int i = 0; i < mix_poly.size(); i++) {
+        // std::cout << mix_poly[i] << "*(";
+        for (int j = 0; j < state_poly.size(); j++) {
+            // std::cout << state_poly[j] << "+";
+            if(product_poly.find(state_poly[j] + mix_poly[i]) != product_poly.end()) {
+                product_poly.erase(product_poly.find(state_poly[j] + mix_poly[i])); //erase all instances if exist
+            } else { //insert
+                //check if 8
+                if (state_poly[j] + mix_poly[i] == 8) {
+                    for (int k = 0; k < 4; k++) {
+                        if(product_poly.find(irreducible_poly[k]) != product_poly.end()) {
+                            product_poly.erase(product_poly.find(irreducible_poly[k]));
+                        } else {
+                            product_poly.insert(irreducible_poly[k]);
+                        }
+                    }
+                } else {
+                    product_poly.insert(state_poly[j] + mix_poly[i]);
+                }
+            }
+        }
+        // std::cout << ")" << std::endl;
+    }
+
+    //set bits
+    std::bitset<8> answer;
+    for(const int& bit: product_poly) answer[bit] = 1;
+
+    return answer;
+
+    // for(const int& x: product_poly) {
+    //     std::cout << x << " ";
+    // }
+    // std::cout << std::endl << binToInt<8>(answer)<< std::endl;
+}
 
 //key generation
 /*
@@ -29,7 +89,8 @@ std::bitset<32> g32(std::bitset<32> word_32, unsigned int round) {
     word_32 = (word_32 << 8) | (word_32 >> (32 - 8));
 
     //byte substition
-    word_32 = byteSub<32>(word_32, SBOX);
+    byteSub<32>(word_32, SBOX);
+
     // std::cout << word_32;
 
     //xor with round constant
@@ -91,3 +152,95 @@ std::vector<std::string> keyGen(const std::string& key_hex) {
 
     return keys;
 }
+
+
+//round functions
+/*
+    Add Round Key
+        -Input: 128 block of Plaintext and key0
+        -Output: Plaintext xor key0
+*/
+std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key_hex) {
+    std::string state_matrix = "";
+    std::string round_key_matrix = "";
+
+    for(int i = 0; i < 8; i+=2) {
+        for (int  j = i; j <= i+24; j+=8) {
+            state_matrix += plain_text_hex.substr(j, 2);
+            round_key_matrix += key_hex.substr(j, 2);
+            // std::cout << j << " ";
+        }
+        // std::cout <<std::endl;
+    }
+
+    std::bitset<128> plain_text128(hexToBin<128>(state_matrix));
+    std::bitset<128> key128(hexToBin<128>(round_key_matrix));
+
+    return plain_text128 ^ key128;
+}
+
+/*
+    Shift rows
+        Input: 128-bit binary
+        Output: Four rows shifted cyclically to the left by offsets of 0,1,2, and 3
+*/
+void shiftRows(std::bitset<128>& bin128) {
+    //split into words
+    std::string str = bin128.to_string();
+    std::bitset<32> word0_32(str.substr(0, 32)),
+                    word1_32(str.substr(32, 32)),
+                    word2_32(str.substr(64, 32)),
+                    word3_32(str.substr(96, 32));
+
+    word1_32 = (word1_32 << 8) | (word1_32 >> (32 - 8));
+    word2_32 = (word2_32 << (8 * 2)) | (word2_32 >> (32 - 8 * 2));
+    word3_32 = (word3_32 << (8 * 3)) | (word3_32 >> (32 - 8 * 3));
+
+    std::bitset<128> result(word0_32.to_string() + word1_32.to_string() + word2_32.to_string() + word3_32.to_string());
+
+    bin128 = result;
+    // std::cout << binToHex(result);
+
+}
+
+/*
+
+*/
+/*
+    Mix Column
+       -Input:
+        -Output:
+*/
+void mixColumn(std::bitset<128>& bin128) {
+
+    // represent as matrix
+    std::vector<std::vector<std::string>> hex_matrix;
+
+    for(int i = 0; i < bin128.size(); i+=32) {
+        std::bitset<32> byte_i(bin128.to_string().substr(i, 32));
+        std::string word = binToHex(byte_i);
+
+        std::vector<std::string> row;
+        for(int j = 0; j < 8; j+=2){
+            row.push_back(word.substr(j, 2));
+        }
+        hex_matrix.push_back(row);
+    }
+
+
+    std::string result_hex; // Initialize result column
+    for (int i = 0; i < 4; i++) { // Iterate over each row of the state matrix
+        for (int j = 0; j < 4; j++) { // Iterate over each column of the state matrix
+            std::bitset<8> col;
+            for (int k = 0; k < 4; k++) { // Iterate over each element of the state matrix
+                col ^= gfMult(MIX[i][k], hex_matrix[k][j]); // Perform the multiplication and XOR operation
+            }
+            result_hex += (binToHex<8>(col)); // Store the result in the result column
+        }
+    }
+
+    bin128 = hexToBin<128>(result_hex);
+
+}
+
+//encryption

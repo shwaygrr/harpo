@@ -7,10 +7,13 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <set>
 
 //tables
 extern const std::vector<std::vector<std::string>> SBOX;
 extern const std::vector<std::string> ROUND_CONSTANTS;
+extern const std::vector<std::vector<std::string>> MIX;
+
 //helper funtions
 /*
     Binary to Decimal
@@ -19,12 +22,14 @@ extern const std::vector<std::string> ROUND_CONSTANTS;
 */
 template<size_t bit_size>
 bigint binToInt(const std::bitset<bit_size>& bin) {
-    bigint result;
+    bigint result = 0;
 
     for (int i = 0; i < bit_size; i++) {
-        result += big_pow(2*bin[i], i);;
+        if (bin[i]) {
+            result += big_pow(2, i); // Assuming big_pow is defined somewhere
+        }
     }
-    // std::cout << result;
+
     return result;
 }
 
@@ -89,6 +94,7 @@ std::bitset<bit_size> hexToBin(const std::string& hex) {
     std::bitset<bit_size> result(result_str);
     return result;
 }
+std::bitset<8> gfMult(const std::string& mix_hex, const std::string& state_hex);
 
 //key generation
 std::bitset<32> g32(std::bitset<32> word_32, unsigned int round);
@@ -96,8 +102,10 @@ std::string roundKey128(const std::string& prev_key_hex, unsigned int round);
 std::vector<std::string> keyGen(const std::string& key_hex);
 
 //round functions
+std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key0_hex);
+
 template<size_t bit_size>
-std::bitset<bit_size>byteSub(std::bitset<bit_size> bin, std::vector<std::vector<std::string>> table) {
+void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> table) {
     //get as hex
     std::string hex_rep = binToHex(bin);
 
@@ -117,9 +125,12 @@ std::bitset<bit_size>byteSub(std::bitset<bit_size> bin, std::vector<std::vector<
     // std::cout << hexToBin<bit_size>(hex_result);
 
     //turn to binary and return
-    return hexToBin<bit_size>(hex_result);
+    bin = hexToBin<bit_size>(hex_result);
 }
 
+void shiftRows(std::bitset<128>& bin128);
+
+void mixColumn(std::bitset<128>& bin128);
 //encryption
 
 
