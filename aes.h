@@ -2,11 +2,8 @@
 #define AES_H
 
 #include "bigint.h"
+#include "conversion.h"
 #include <iostream>
-#include <bitset>
-#include <string>
-#include <sstream>
-#include <vector>
 #include <set>
 
 //tables
@@ -17,115 +14,21 @@ extern const std::vector<std::vector<std::string>> INV_SBOX;
 extern const std::vector<std::vector<std::string>> INV_MIX;
 
 //helper funtions
-/*
-    Binary to Decimal
-        Input: Binary
-        Output: Decimal representation
-*/
-template<size_t bit_size>
-bigint binToInt(const std::bitset<bit_size>& bin) {
-    bigint result = 0;
-
-    for (int i = 0; i < bit_size; i++) {
-        if (bin[i]) {
-            result += big_pow(2, i); // Assuming big_pow is defined somewhere
-        }
-    }
-
-    return result;
-}
-
-
-/*
-    Binary to Hexadecimal
-        - Input: binary
-        - Output: hexadecimal representation
-*/
-template<size_t bit_size>
-std::string binToHex(const std::bitset<bit_size>& bin) {
-    std::string bin_str = bin.to_string();
-
-    //pad
-    while (bin_str.size() % 4 != 0) bin_str = "0" + bin_str;
-
-    std::string hex_str;
-
-    //hex chunks of 4 bits
-    for (int i = 0; i < bin_str.size(); i += 4) {
-        // Extract a chunk of 4 bits from the binary number
-        std::bitset<4> chunk(bin_str.substr(i, 4));
-
-        //chunk to decimal
-        char hex_digit = chunk.to_ulong() < 10 ? '0' + chunk.to_ulong() : 'A' + chunk.to_ulong() - 10;
-
-        hex_str.push_back(hex_digit);
-    }
-
-    // Return the hexadecimal string
-    return hex_str;
-}
-
-/*
-    Integer to Binary
-        Input: Integer
-        Output: Binary representation
-*/
-template<size_t bit_size>
-std::bitset<bit_size> intToBin(bigint integer) {
-    std::string result;
-
-    while(integer != 0) {
-        result = (integer % 2).as_str() + result;
-        integer /= 2;
-    }
-    // std::cout << result;
-    std::bitset<bit_size> result_bin(result);
-    return result_bin;
-}
-
-/*
-    Hexadecimal to Binary
-        - Input: Hexadecimal as string
-        - Output: Binary representation
-*/
-template<size_t bit_size>
-std::bitset<bit_size> hexToBin(const std::string& hex) {
-    std::string result_str = "";
-
-    //convert to int
-    for(const char& hex_letter : hex) {
-        //convert to int
-        int int_value;
-        std::stringstream int_value_ss;
-        int_value_ss << std::hex << hex_letter;
-        int_value_ss  >> int_value;
-
-        std::string int_value_bin = intToBin<4>(int_value).to_string();
-
-        result_str += int_value_bin;
-    }
-
-    //int to binary
-    std::bitset<bit_size> result(result_str);
-    return result;
-}
-
 std::bitset<8> gf8Mult(const std::string& mix_hex, const std::string& state_hex);
-
-/***************************************************************************************************************************/
+std::string flipMatrix(const std::string& hex_str);
 
 //key generation
 std::bitset<32> g32(std::bitset<32> word_32, unsigned int round);
 std::string roundKey128(const std::string& prev_key_hex, unsigned int round);
 std::vector<std::string> keyGen(const std::string& key_hex);
 
-/***************************************************************************************************************************/
+
 //encryption
 //round functions
-std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key0_hex); //can be used in decryption
+std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key0_hex); //used in decryption
 
-template<size_t bit_size> //can be used in decryption
-void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> table) {
+template<size_t bit_size> //used in decryption
+void byteSub(std::bitset<bit_size>& bin, const std::vector<std::vector<std::string>>& table) {
     //get as hex
     std::string hex_rep = binToHex(bin);
 
@@ -150,17 +53,16 @@ void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> t
 
 void shiftRows(std::bitset<128>& bin128);
 
-void mixColumn(std::bitset<128>& bin128, std::vector<std::vector<std::string>> table);
+void mixColumn(std::bitset<128>& bin128, const std::vector<std::vector<std::string>>& table); //used in decryption
 
+//AES-128 encryption
 std::bitset<128> aesEnc128(const std::string& plain_text128, const std::string& priv_key128);
 
-/***************************************************************************************************************************/
+
 //decryption
 //inverse round functions
 void invShiftRows(std::bitset<128>& bin128) ;
+
+//AES-128 decryption
 std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& priv_key);
-
-
-
-
 #endif // AES_H

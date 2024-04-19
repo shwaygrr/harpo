@@ -1,8 +1,6 @@
 #include "aes.h"
 
 //helper functions
-
-
 /*
     Binary multiplacation using Galois Field
         Input: 2 Hex values one 4 bit and other 8 bits
@@ -176,7 +174,7 @@ std::vector<std::string> keyGen(const std::string& key_hex) {
 
 
 
-
+// encryption
 //round functions
 /*
     Add Round Key
@@ -190,6 +188,7 @@ std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::strin
 
     return plain_text128 ^ key128;
 }
+
 
 /*
     Shift rows
@@ -216,13 +215,12 @@ void shiftRows(std::bitset<128>& bin128) {
 }
 
 
-
 /*
     Mix Column
        -Input:
         -Output:
 */
-void mixColumn(std::bitset<128>& bin128, std::vector<std::vector<std::string>> table) {
+void mixColumn(std::bitset<128>& bin128, const std::vector<std::vector<std::string>>& table) {
     // represent as matrix
     std::vector<std::vector<std::string>> hex_matrix;
 
@@ -253,7 +251,7 @@ void mixColumn(std::bitset<128>& bin128, std::vector<std::vector<std::string>> t
     bin128 = hexToBin<128>(result_hex);
 }
 
-//encryption
+//AES-128 encryption
 std::bitset<128> aesEnc128(const std::string& plain_text, const std::string& priv_key) {
     std::cout << "beginning encryption..." << std::endl;
     //generate keys
@@ -310,6 +308,7 @@ void invShiftRows(std::bitset<128>& bin128) {
 }
 
 
+//AES-128 decryption
 std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& priv_key) {
     std::cout << "beginning decryption..." << std::endl;
 

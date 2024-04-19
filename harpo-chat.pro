@@ -18,6 +18,7 @@ SOURCES += \
 HEADERS += \
     aes.h \
     bigint.h \
+    conversion.h \
     mainwindow.h \
     rsa.h
 
