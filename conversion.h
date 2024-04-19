@@ -2,6 +2,7 @@
 #define CONVERSION_H
 
 #include "bigint.h"
+#include <iostream>
 #include <bitset>
 
 /*
@@ -98,5 +99,40 @@ std::bitset<bit_size> hexToBin(const std::string& hex) {
     std::bitset<bit_size> result(result_str);
     return result;
 }
+
+
+
+inline bigint textToInt(const std::string& text) {
+    std::string result;
+
+    for (char c : text) {
+        std::string ascii = std::to_string(static_cast<int>(c-32));
+        std::cout << ascii << " ";
+        if (ascii.size() == 1)
+            result += ("0"+ascii);
+        else
+            result += (ascii);
+    }
+    return to_bigint(result);
+}
+
+
+inline std::string intToText(const bigint& integer) {
+
+    std::string int_str = integer.as_str();
+
+    std::string result = "";
+
+    for(int i = 0; i < int_str.size(); i+=2) {
+        unsigned int ascii = stoi(int_str.substr(i, 2)) + 32;
+        result += static_cast<char>(ascii);
+        std::cout << ascii << ": " << static_cast<char>(ascii) << std::endl;
+    }
+
+
+    return result;
+}
+
+
 
 #endif // CONVERSION_H
