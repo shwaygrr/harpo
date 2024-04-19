@@ -13,6 +13,8 @@
 extern const std::vector<std::vector<std::string>> SBOX;
 extern const std::vector<std::string> ROUND_CONSTANTS;
 extern const std::vector<std::vector<std::string>> MIX;
+extern const std::vector<std::vector<std::string>> INV_SBOX;
+extern const std::vector<std::vector<std::string>> INV_MIX;
 
 //helper funtions
 /*
@@ -108,17 +110,21 @@ std::bitset<bit_size> hexToBin(const std::string& hex) {
     return result;
 }
 
-std::bitset<8> gfMult(const std::string& mix_hex, const std::string& state_hex);
+std::bitset<8> gf8Mult(const std::string& mix_hex, const std::string& state_hex);
+
+/***************************************************************************************************************************/
 
 //key generation
 std::bitset<32> g32(std::bitset<32> word_32, unsigned int round);
 std::string roundKey128(const std::string& prev_key_hex, unsigned int round);
 std::vector<std::string> keyGen(const std::string& key_hex);
 
+/***************************************************************************************************************************/
+//encryption
 //round functions
-std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key0_hex);
+std::bitset<128> addRoundKey(const std::string& plain_text_hex, const std::string& key0_hex); //can be used in decryption
 
-template<size_t bit_size>
+template<size_t bit_size> //can be used in decryption
 void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> table) {
     //get as hex
     std::string hex_rep = binToHex(bin);
@@ -144,15 +150,17 @@ void byteSub(std::bitset<bit_size>& bin, std::vector<std::vector<std::string>> t
 
 void shiftRows(std::bitset<128>& bin128);
 
-void mixColumn(std::bitset<128>& bin128);
+void mixColumn(std::bitset<128>& bin128, std::vector<std::vector<std::string>> table);
 
-//encryption
 std::bitset<128> aesEnc128(const std::string& plain_text128, const std::string& priv_key128);
 
-//inverse round functions
-
-
+/***************************************************************************************************************************/
 //decryption
+//inverse round functions
+void invShiftRows(std::bitset<128>& bin128) ;
+std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& priv_key);
+
+
 
 
 #endif // AES_H

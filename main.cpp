@@ -43,9 +43,17 @@ int main() {
 
     std::bitset<128> plain_text128 = intToBin<128>(plain_text), priv_key128 = intToBin<128>(priv_key);
 
+
     std::bitset<128> cipher_text128 = aesEnc128(binToHex<128>(plain_text128), binToHex<128>(priv_key128));
 
-    std::cout << binToHex(cipher_text128);
+    std::cout << binToHex(cipher_text128) << std::endl;
+
+
+    std::bitset<128> dec_text128 = aesDec128(binToHex<128>(cipher_text128), binToHex<128>(priv_key128));
+
+    std::cout << binToHex(dec_text128);
+
+    // gf8Mult("0F", "FF");
 
     // std::cout << hexToBin<8>("08");
     return 0;

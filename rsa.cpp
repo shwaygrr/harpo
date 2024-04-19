@@ -200,7 +200,7 @@ bigint randPrimeGen(unsigned int size) {
 
     do {
         rand_num = randOddNumGen(size);
-    } while(millerRabin(rand_num, 50) == false );
+    } while(millerRabin(rand_num, 50) == false ); //maybe disqualigy multiples of 5
 
     return rand_num;
 }
