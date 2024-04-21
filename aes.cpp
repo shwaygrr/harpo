@@ -349,3 +349,65 @@ std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& pr
 
     return plain_text128;
 }
+
+
+
+
+/*
+    Electronic Code Block Mode of Operation
+        - Input: 128x-bit Plain text as hex and 128-bit hex
+        - Output: 128x-bit Cipher text as hex
+*/
+std::string encECB128(std::string message_hex, std::string priv_key_hex) {
+
+    //pad message and key
+    while (message_hex.size() % 32 != 0) message_hex = "0" + message_hex;
+    while (priv_key_hex.size() % 32 != 0) priv_key_hex = "0" + priv_key_hex;
+
+    //start encryption 128 bits at a time
+    std::string cipher_text = "";
+
+    for(int i = 0; i < message_hex.length(); i+=32) {
+        //get 32-hexadecimal block
+        std::string cipher_hex_block = message_hex.substr(i, 32);
+
+        //encrypt
+        cipher_hex_block = binToHex<128>(aesEnc128(cipher_hex_block, priv_key_hex));
+
+        //add block
+        cipher_text += cipher_hex_block;
+    }
+
+    return cipher_text;
+}
+
+
+/*
+    Electronic Code Block Mode of Operation
+        - Input: 128x-bit Cipher text as hex and 128-bit hex
+        - Output: 128x-bit Plain text as hex
+*/
+std::string decECB128(std::string message_hex, std::string priv_key_hex) {
+
+    //pad message and key
+    while (message_hex.size() % 32 != 0) message_hex = "0" + message_hex;
+    while (priv_key_hex.size() % 32 != 0) priv_key_hex = "0" + priv_key_hex;
+
+    // std::cout << message_hex
+
+    //start encryption 128 bits at a time
+    std::string plain_text = "";
+
+    for(int i = 0; i < message_hex.length(); i+=32) {
+        //get 32-hexadecimal block
+        std::string plain_hex_block = message_hex.substr(i, 32);
+
+        //encrypt
+        plain_hex_block = binToHex<128>(aesDec128(plain_hex_block, priv_key_hex));
+
+        //turn block to text
+        plain_text += plain_hex_block;
+    }
+
+    return plain_text;
+}

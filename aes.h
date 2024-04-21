@@ -66,3 +66,8 @@ void invShiftRows(std::bitset<128>& bin128) ;
 //AES-128 decryption
 std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& priv_key);
 #endif // AES_H
+
+
+//Mode of operation
+std::string encECB128(std::string message_hex, std::string priv_key_hex);
+std::string decECB128(std::string message_hex, std::string priv_key_hex);
