@@ -6,25 +6,229 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>924</width>
+    <height>643</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Source Code Pro</family>
+    <pointsize>12</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background: #212121;</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Source Code Pro</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: #212121;
+color: white;</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPlainTextEdit" name="plainTextEdit">
+      <property name="font">
+       <font>
+        <family>Source Code Pro</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 1px solid  #41cd52;
+ border-radius: 5px;
+padding: 5px;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Plain Text</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>450</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Source Code Pro</family>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #41cd52;
+border: 1px solid  #41cd52;
+border-radius: 10px;
+padding: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Encrypt</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLineEdit" name="rsaKeyLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>650</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Source Code Pro</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid  #41cd52;
+padding: 10px;
+border-readius: 5px;</string>
+        </property>
+        <property name="placeholderText">
+         <string>RSA Key</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLineEdit" name="aesKeyLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>650</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Source Code Pro</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid  #41cd52;
+padding: 10px;
+border-readius: 5px;</string>
+        </property>
+        <property name="placeholderText">
+         <string>AES Key (Encrypted)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>450</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Source Code Pro</family>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #41cd52;
+border: 1px solid  #41cd52;
+border-radius: 10px;
+padding: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Decrypt</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="cipherTextEdit">
+      <property name="font">
+       <font>
+        <family>Source Code Pro</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 1px solid  #41cd52;
+ border-radius: 5px;
+padding: 5px;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Cipher Text</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>924</width>
      <height>25</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
