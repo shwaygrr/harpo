@@ -234,7 +234,10 @@ void keyGen(unsigned int bit_size) {
         d_private = EEA(phi, e_public);
     } while ((e_public * d_private) % phi != 1); //check if e*d mod phi = 1
 
-    std::cout << "Verification: " << (d_private * e_public) % phi << std::endl;
+    std::cout << "n_public: " << n_public << std::endl;
+    std::cout << "e_public: " << e_public << std::endl;
+    std::cout << "d_private: " << d_private << std::endl;
+    // std::cout << "Verification: " << (d_private * e_public) % phi << std::endl;
 }
 
 /*
@@ -243,19 +246,16 @@ void keyGen(unsigned int bit_size) {
         Output: Cipher text interger
     //obtain authentic public key **digital signiture**
 */
-bigint cipherTextRSA(const bigint& plain_text) {
-    if (big_log2(plain_text)+1 > 2048) {
-        std::cout << "handle large message";
-    }
-
-    return modExp(plain_text, e_public, n_public);
+bigint rsaEnc(const bigint& plain_text, const bigint& e_pub_key, const bigint& n_pub_key) {
+    return modExp(plain_text, e_pub_key, n_pub_key);
 }
+
 
 /*
     RSA Decryption
         Input: Cipher Text as integer
         Output: plain text ass integer (original message)
 */
-bigint plainTextRSA(const bigint& cipher_text) {
-    return modExp(cipher_text, d_private, n_public);
+bigint rsaDec(const bigint& cipher_text, const bigint& priv_key, const bigint& n_pub_key) {
+    return modExp(cipher_text, priv_key, n_pub_key);
 }

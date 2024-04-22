@@ -15,11 +15,21 @@ int main(int argc, char *argv[])
 
     MainWindow* harpo_chat = new MainWindow;
 
+    bigint message("4");
+
+    keyGen(10);
+
+    bigint cipher = rsaEnc(message, e_public, n_public);
+
+    bigint cipher_dec = rsaDec(cipher, d_private, n_public);
+
+    std::cout << "cipher: " << cipher << std::endl;
+    std::cout << "cipher decrypted: " << cipher_dec << std::endl;
     // Show the intro screen for 3 seconds
-    QTimer::singleShot(0, [&]() {
+    // QTimer::singleShot(0, [&]() {
         // After 3 seconds, show the main window
         harpo_chat->show();
-    });
+    // });
     // harpo_chat->show();
     return a.exec();
 

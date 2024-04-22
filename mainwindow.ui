@@ -116,7 +116,7 @@ padding: 5px;</string>
         <property name="styleSheet">
          <string notr="true">border: 1px solid  #41cd52;
 padding: 10px;
-border-readius: 5px;</string>
+border-radius: 5px;</string>
         </property>
         <property name="placeholderText">
          <string>RSA Key</string>
@@ -150,7 +150,7 @@ border-readius: 5px;</string>
         <property name="styleSheet">
          <string notr="true">border: 1px solid  #41cd52;
 padding: 10px;
-border-readius: 5px;</string>
+border-radius: 5px;</string>
         </property>
         <property name="placeholderText">
          <string>AES Key (Encrypted)</string>

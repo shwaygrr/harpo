@@ -20,10 +20,10 @@ bigint randPrimeGen(unsigned int size);
 void keyGen(unsigned int bit_size);
 
 //encryption
-bigint cipherTextRSA(const bigint& plain_text);
+bigint rsaEnc(const bigint& cipher_text, const bigint& e_pub_key, const bigint& n_pub_key);
 
 //decryption
-bigint plainTextRSA(const bigint& cipher_text);
+bigint rsaDec(const bigint& cipher_text, const bigint& priv_key, const bigint& n_pub_key);
 
 //keys
 extern bigint n_public;
