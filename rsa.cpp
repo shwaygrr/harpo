@@ -1,5 +1,5 @@
 #include "rsa.h"
-
+#include "conversion.h"
 //keys
 bigint n_public, e_public, d_private;
 
@@ -24,6 +24,7 @@ bigint modExp(const bigint& base, bigint exp, const bigint& modulus) {
     exp /= 2;
 
     while (exp != 0) {
+        std::cout << exp << std::endl;
         A = (A*A) % modulus;
 
         if (exp % 2 == 1) result = (A*result) % modulus;
@@ -158,13 +159,60 @@ bool millerRabin(const bigint& odd_num, unsigned int t) {
 
 
 /*
+    Stein’s algorithm or binary GCD algorithm is an algorithm that computes the greatest common divisor of two non-negative integers.
+    Stein’s algorithm replaces division with arithmetic shifts, comparisons, and subtraction.
+    https://www.geeksforgeeks.org/steins-algorithm-for-finding-gcd/
+*/
+bigint gcd(const bigint &a, const bigint& b) {
+    std::cout << "(" << a << ", " << b << ")" << std::endl;
+    std::bitset<512> a_bin = intToBin<512>(a), b_bin = intToBin<512>(b);
+
+    /*Finding K, where K is the
+    greatest power of 2
+    that divides both a and b. */
+    int k;
+    for (k = 0; ((a_bin | b_bin) & std::bitset<512>(1)) == 0; ++k) {
+        a_bin >>= 1;
+        b_bin >>= 1;
+    }
+
+    /* Dividing a by 2 until a becomes odd */
+    while ((a_bin & std::bitset<512>(1)) == 0) a_bin >>= 1;
+
+    /* From here on, 'a' is always odd. */
+    do {
+        std::cout << binToInt<512>(b_bin) << std::endl;
+        /* If b is even, remove all factor of 2 in b */
+        while ((b_bin & std::bitset<512>(1)) == 0) b_bin >>= 1;
+        /* Now a and b are both odd.
+        Swap if necessary so a <= b,
+        then set b = b - a (which is even).*/
+        if (binToInt<512>(a_bin) > binToInt<512>(b_bin)) {
+            std::bitset<512> temp = a_bin;
+            a_bin = b_bin;
+            b_bin = temp;
+        }
+
+
+        b_bin = intToBin<512>(binToInt<512>(b_bin) - binToInt<512>(a_bin));
+    } while (b_bin != 0);
+
+    /* restore common factors of 2 */
+    std::cout << binToInt<512>(a_bin << k) << std::endl;
+    return binToInt<512>(a_bin << k);
+}
+
+
+/*
     Extended Euclidean
         -Input: two non-negative integer a and b : a >= b
         -Output: d = gcd(a, b) and integers x, y satisfying ax + by = d
         **Algorithm from Handbook of Applied Cryptography**
 */
 bigint EEA(bigint a, bigint b) {
+    std::cout << "calculating inverse..." << std::endl;
     bigint d, x, y;
+
 
     if (b == 0) {
         d = a; x = 1; y = 0;
@@ -183,9 +231,7 @@ bigint EEA(bigint a, bigint b) {
 
     d = a; x = x2; y = y2;
 
-    // std::cout << d << std::endl;
     if (x > 0) return x; else return y;
-    // return {d, x + a};
 }
 
 
@@ -200,7 +246,10 @@ bigint randPrimeGen(unsigned int size) {
 
     do {
         rand_num = randOddNumGen(size);
-    } while(millerRabin(rand_num, 50) == false ); //maybe disqualigy multiples of 5
+        std::cout << "testing " << rand_num << std::endl;
+    } while(rand_num % 3 == 0 || rand_num % 5 == 0 || millerRabin(rand_num, 50) == false ); //maybe disqualigy multiples of 5
+
+    std::cout << "Found Prime: " << rand_num << std::endl;
 
     return rand_num;
 }
@@ -215,8 +264,12 @@ bigint randPrimeGen(unsigned int size) {
 void keyGen(unsigned int bit_size) {
 
     //generate two large primes
-    bigint p = randPrimeGen(bit_size);
-    bigint q = randPrimeGen(bit_size);
+    // bigint p = randPrimeGen(bit_size);
+    // bigint q = randPrimeGen(bit_size);
+
+    //tested primes
+    bigint p("70343393710718721739938719193169510179855281731980269448074487233019254740753");
+    bigint q("58221670538539099290977277207231427756011693475693578834912044130655753867843");
 
     //ensure p and q are distinct
     while (p == q) q = randPrimeGen(bit_size);
@@ -228,10 +281,14 @@ void keyGen(unsigned int bit_size) {
     //generate public and private keys
     do {
         //generate random e
-        e_public= randNumGen(2, phi - 1);
+        do {
+            std::cout << "getting e" << std::endl;
+            e_public = randNumGen(2, phi - 1);
+        } while (gcd(phi, e_public) != 1);
 
         //compute inverse
         d_private = EEA(phi, e_public);
+        std::cout << "e_public * d_private) % phi = " << (e_public * d_private) % phi << std::endl;
     } while ((e_public * d_private) % phi != 1); //check if e*d mod phi = 1
 
     std::cout << "n_public: " << n_public << std::endl;
@@ -240,6 +297,7 @@ void keyGen(unsigned int bit_size) {
     // std::cout << "Verification: " << (d_private * e_public) % phi << std::endl;
 }
 
+
 /*
     RSA Encryption
         Input: Message plain text as integer
@@ -247,6 +305,7 @@ void keyGen(unsigned int bit_size) {
     //obtain authentic public key **digital signiture**
 */
 bigint rsaEnc(const bigint& plain_text, const bigint& e_pub_key, const bigint& n_pub_key) {
+    std::cout << "rsa encryption..." << std::endl;
     return modExp(plain_text, e_pub_key, n_pub_key);
 }
 
@@ -257,5 +316,6 @@ bigint rsaEnc(const bigint& plain_text, const bigint& e_pub_key, const bigint& n
         Output: plain text ass integer (original message)
 */
 bigint rsaDec(const bigint& cipher_text, const bigint& priv_key, const bigint& n_pub_key) {
+    std::cout << "rsa decrypting..." << std::endl;
     return modExp(cipher_text, priv_key, n_pub_key);
 }
