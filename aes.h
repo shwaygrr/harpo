@@ -58,7 +58,6 @@ void mixColumn(std::bitset<128>& bin128, const std::vector<std::vector<std::stri
 //AES-128 encryption
 std::bitset<128> aesEnc128(const std::string& plain_text128, const std::string& priv_key128);
 
-
 //decryption
 //inverse round functions
 void invShiftRows(std::bitset<128>& bin128) ;

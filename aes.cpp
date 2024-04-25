@@ -351,8 +351,6 @@ std::bitset<128> aesDec128(const std::string& cipher_text, const std::string& pr
 }
 
 
-
-
 /*
     Electronic Code Block Mode of Operation
         - Input: 128x-bit Plain text as hex and 128-bit hex
