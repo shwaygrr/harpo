@@ -14,7 +14,7 @@ Harpo is a cryptographic application written in C++ using the Qt framework. It p
 3. Build the project using your preferred C++ compiler.
 
 ## Usage
-1. Open the project in your preferred IDE or text editor.
+1. Open the project in QtCreator.
 2. Build the project using the provided qMakefile or build system.
 3. Run the executable file to launch the Harpo application.
 4. Use the graphical interface to encrypt and decrypt messages securely.
